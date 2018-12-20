@@ -21,8 +21,14 @@ export = function(source: string, map) {
       delete data[tripleSlashFlag];
    }
 
+   const coffeeFlag = "ifdef-coffee";
+   const coffee = data[coffeeFlag];
+   if(coffee !== undefined) {
+      delete data[coffeeFlag];
+   }
+
    try {
-      source = parse(source, data, verbose, tripleSlash);
+      source = parse(source, data, verbose, tripleSlash, coffee);
       this.callback(null, source, map);
    } catch(err) {
       const errorMessage = `ifdef-loader error: ${err}`;

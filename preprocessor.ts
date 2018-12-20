@@ -5,10 +5,12 @@ interface IStart {
 }
 
 let useTripleSlash: boolean|undefined;
+let useCoffeeComment: boolean|undefined;
 
-export function parse(source: string, defs: object, verbose?: boolean, tripleSlash?: boolean): string {
+export function parse(source: string, defs: object, verbose?: boolean, tripleSlash?: boolean, coffee?: boolean): string {
    if(tripleSlash === undefined) tripleSlash = true;
    useTripleSlash = tripleSlash;
+   useCoffeeComment = coffee ? true : false;
 
    const lines = source.split('\n');
 
@@ -54,7 +56,12 @@ export function parse(source: string, defs: object, verbose?: boolean, tripleSla
 }
 
 function match_if(line: string): IStart|undefined {
-   const re = useTripleSlash ? /^[\s]*\/\/\/([\s]*)#(if)([\s\S]+)$/g : /^[\s]*\/\/([\s]*)#(if)([\s\S]+)$/g;
+   let re;
+   if (useCoffeeComment) {
+      re = /^([\s]*)#(if)([\s\S]+)$/g;
+   } else {
+      re = useTripleSlash ? /^[\s]*\/\/\/([\s]*)#(if)([\s\S]+)$/g : /^[\s]*\/\/([\s]*)#(if)([\s\S]+)$/g;
+   }
    const match = re.exec(line);
    if(match) {
       return {
@@ -67,13 +74,23 @@ function match_if(line: string): IStart|undefined {
 }
 
 function match_endif(line: string): boolean {
-   const re = useTripleSlash ? /^[\s]*\/\/\/([\s]*)#(endif)[\s]*$/g : /^[\s]*\/\/([\s]*)#(endif)[\s]*$/g;
+   let re;
+   if (useCoffeeComment) {
+      re = /^([\s]*)#(endif)([\s\S]+)$/g;
+   } else {
+      re = useTripleSlash ? /^[\s]*\/\/\/([\s]*)#(endif)[\s]*$/g : /^[\s]*\/\/([\s]*)#(endif)[\s]*$/g;
+   }
    const match = re.exec(line);
    return Boolean(match);
 }
 
 function match_else(line: string): boolean {
-   const re = useTripleSlash ? /^[\s]*\/\/\/([\s]*)#(else)[\s]*$/g : /^[\s]*\/\/([\s]*)#(else)[\s]*$/g;
+   let re;
+   if (useCoffeeComment) {
+      re = /^([\s]*)#(else)([\s\S]+)$/g;
+   } else {
+      re = useTripleSlash ? /^[\s]*\/\/\/([\s]*)#(else)[\s]*$/g : /^[\s]*\/\/([\s]*)#(else)[\s]*$/g;
+   }
    const match = re.exec(line);
    return Boolean(match);
 }
@@ -162,7 +179,11 @@ function blank_code(lines: string[], start: number, end: number) {
       const len = lines[t].length;
       const lastChar = lines[t].charAt(len-1);
       const windowsTermination = lastChar === '\r';
-      if(len === 0)
+      if (useCoffeeComment)
+      {
+         lines[t] = '';
+      }
+      else if(len === 0)
       {
          lines[t] = '';
       }

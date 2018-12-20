@@ -1,0 +1,11 @@
+
+
+class Something
+
+  fn: ->
+    'sup'
+
+
+
+
+

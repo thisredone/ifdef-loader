@@ -1,6 +1,7 @@
 node_modules/
 .vscode/
-*.js
+spec/data/*.actual.*js
+spec/data/*.actual.coffee
 !**/*.in.js
 !**/*.out.js
 !**/*webpack*.js

@@ -25,6 +25,15 @@ const defs = {
 
 describe("files spec", ()=> {
 
+   it('works with coffee', () => {
+      const inFile = read('spec/data/coffee.in.coffee');
+      const coffee = true;
+      const actualFile = parse(inFile, defs, false, false, coffee);
+      const expectedFile = read('spec/data/coffee.out.coffee');
+      write('spec/data/coffee.actual.coffee', actualFile);
+      expect(actualFile).toEqual(expectedFile);
+   });
+
    const files = [ "simple", "nested", "dfleury", "nested.else", "simple.doubleslash" ];
 
    const fileSet = files.map(fn => ({
@@ -37,8 +46,8 @@ describe("files spec", ()=> {
    // checks spec files as terminating in CRLF (windows)
    fileSet.forEach( ({ input, output, actual })=> {
       it(`works on ${input}`, ()=> {
-         const tripleSlash = input.indexOf(".doubleslash.")==-1; 
-         const inFile = read(input);         
+         const tripleSlash = input.indexOf(".doubleslash.")==-1;
+         const inFile = read(input);
          const actualFile = parse(inFile, defs, false, tripleSlash);
          const expectedFile = read(output);
          write(actual, actualFile);
@@ -49,7 +58,7 @@ describe("files spec", ()=> {
    // checks spec files as terminating in LF only (unix)
    fileSet.forEach( ({ input, output, actualLF })=> {
       it(`works on ${input}`, ()=> {
-         const tripleSlash = input.indexOf(".doubleslash.")==-1; 
+         const tripleSlash = input.indexOf(".doubleslash.")==-1;
          const inFile = removeCR(read(input));
          const actualFile = parse(inFile, defs, false, tripleSlash);
          const expectedFile = removeCR(read(output));
@@ -66,7 +75,7 @@ describe("webpack bundle", ()=>{
    const fileSet = files.map(fn => ({
       input:    `spec/data/${fn}.in.js`,
       output:   `spec/data/${fn}.out.js`,
-      actual:   `spec/data/${fn}.out.actual.js`      
+      actual:   `spec/data/${fn}.out.actual.js`
    }));
 
    // checks spec files as terminating in CRLF (windows)
@@ -74,7 +83,7 @@ describe("webpack bundle", ()=>{
       it(`build correctly on ${input}`, ()=> {
          const inFile = read(input);
          const actualFile = read(actual);
-         const expectedFile = read(output);         
+         const expectedFile = read(output);
          expect(actualFile).toEqual(expectedFile);
       });
    });
